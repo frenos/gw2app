@@ -45,21 +45,29 @@ class ApiClient:
         return response.json()
 
     def getItems(self, itemIds):
-        url = apiBaseUrl + apiEndpoints["Items"]
-
         # workaround fuer ids-parameter:
         # api braucht ids=1,2,3
         # request-param mit list erzeugt aber ids=1&ids=2...
         # daher liste in String und param als String
         # TODO: research more
         idsString = ",".join(str(x) for x in itemIds)
+        return self.getItem(idsString=idsString)
+
+    def getItem(self, itemId=None, idsString=None):
+        url = apiBaseUrl + apiEndpoints["Items"]
+
+        if idsString:
+            ids = idsString
+        elif itemId:
+            ids = itemId
 
         params = {
-            "lang": apiLanguage,
-            "ids": idsString
+                "lang": apiLanguage,
+                "ids": ids
         }
         response = self.httpSession.get(url=url, params=params)
         return response.json()
+
 
     def getAllItems(self):
         allItemIds = self.getItemIds()
@@ -76,6 +84,20 @@ class ApiClient:
             allItems.extend(self.getItems(chunk))
 
         return allItems
+
+
+    def getBankContent(self):
+        url = apiBaseUrl+apiEndpoints["AccountBank"]
+        params = {
+            "lang" : apiLanguage,
+            "access_token" : self.api_key
+        }
+        response = self.httpSession.get(url=url, params=params)
+
+        bankContents = response.json()
+        return bankContents
+
+
 
     def getCurrencies(self):
         url = apiBaseUrl + apiEndpoints["Currencies"]
