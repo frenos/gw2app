@@ -35,7 +35,7 @@ class ItemDb:
             else:
                 newVendVal = 0
 
-            itemObject = Item.query.filter_by(id=itemId).first()
+            itemObject = Item.query.get(id=itemId)
             if itemObject:
 
                 itemObject.name = newName

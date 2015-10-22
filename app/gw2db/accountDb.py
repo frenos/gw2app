@@ -3,7 +3,7 @@ from datetime import datetime
 __author__ = 'Frenos'
 from ..gw2api.apiclient import ApiClient
 from ..database import db
-from ..database.models import WalletData, Currency
+from ..database.models import WalletData, Currency, BankSlot, Item
 
 
 class AccountDb:
@@ -55,3 +55,63 @@ class AccountDb:
             newData = WalletData(currency=currencyObject, value=data['value'], time=datetime.utcnow())
             db.session.add(newData)
         db.session.commit()
+
+    def getBankContent(self):
+        bankContents = self.apiClient.getBankContent()
+        # list(enumerate(list)) erzeugt neue list mit [(index, value), ..]
+        for bankSlot in list(enumerate(bankContents)):
+            slotId = bankSlot[0]
+            if bankSlot[1]:
+                item = Item.query.get(bankSlot[1]['id'])
+                if not item:
+                    itemResponse = self.apiClient.getItem(bankSlot[1]['id'])
+                    for item in itemResponse:
+                        itemId = item['id']
+                        # prep values and errorcheck
+                        if 'name' in item:
+                            newName = item['name']
+                        else:
+                            newName = None
+                        if 'icon' in item:
+                            newIcon = item['icon']
+                        else:
+                            newIcon = None
+                        if 'description' in item:
+                            newDescription = item['description']
+                        else:
+                            newDescription = None
+                        if 'level' in item:
+                            newLevel = item['level']
+                        else:
+                            newLevel = 99
+                        if 'vendor_value' in item:
+                            newVendVal = item['vendor_value']
+                        else:
+                            newVendVal = 0
+
+                        item = Item(
+                            id=itemId,
+                            name=newName,
+                            icon=newIcon,
+                            description=newDescription,
+                            type=None,
+                            rarity=None,
+                            level=newLevel,
+                            vendor_value=newVendVal,
+                        )
+                        db.session.add(item)
+                        db.session.commit()
+
+                count = bankSlot[1]['count']
+            else:
+                item = None
+                count = 0
+            bankSlotObject = BankSlot.query.get(bankSlot[0])
+            if bankSlotObject:
+                bankSlotObject.id = slotId
+                bankSlotObject.count = count
+                bankSlotObject.item = item
+            else:
+                newBankSlot = BankSlot(id=slotId, item=item, count=count)
+                db.session.add(newBankSlot)
+                db.session.commit()

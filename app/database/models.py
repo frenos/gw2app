@@ -15,6 +15,7 @@ class Item(db.Model):
 
     # TODO:cross-reference Skin-ID to Skin-Api?
     default_skin = db.Column(db.Integer)
+    bankslots = db.relationship('BankSlot', backref='item')
 
 
 class Type(db.Model):
@@ -47,3 +48,9 @@ class WalletData(db.Model):
     currencyId = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     value = db.Column(db.Integer)
     time = db.Column(db.DateTime)
+
+class BankSlot(db.Model):
+    __tablename__ = 'bankslots'
+    id = db.Column(db.Integer, primary_key=True)
+    itemID = db.Column(db.Integer, db.ForeignKey('items.id'))
+    count = db.Column(db.Integer)

@@ -5,8 +5,7 @@ __author__ = 'Frenos'
 from datetime import datetime
 
 from flask import render_template
-from ..database.models import Currency
-from ..tasks import getWalletData_async
+from ..database.models import Currency, BankSlot
 
 
 @mainsite.route('/')
@@ -42,6 +41,11 @@ def accountWalletDetail(currencyID):
     return render_template('account_wallet_currency.html', currencyInfo=currencyInfo, archiveData=archiveData)
 
 
+@mainsite.route('/account/bank')
+def accountBank():
+    bankInfo = BankSlot.query.order_by(BankSlot.id.asc()).all()
+    return render_template('account_bank.html', bankInfo=bankInfo)
+
 @mainsite.route('/user/<name>')
 def user(name):
     return render_template('user.html', name=name)
@@ -49,7 +53,6 @@ def user(name):
 
 @mainsite.route('/testupdate')
 def testUpdate():
-    getWalletData_async.delay()
-
+    # getWalletData_async.delay()
     # tasks.updateWalletData_async.delay()
     return render_template('index.html', current_time=datetime.utcnow())

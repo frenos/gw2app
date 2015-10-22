@@ -25,6 +25,12 @@ def updateItems_async():
     myItemDb.updateItems()
 
 
+@celery.task(base=celery.Task)
+def updateBank_async():
+    celery = create_celery_app()
+    myAccountDb.getBankContent()
+
+
 @task_postrun.connect
 def close_session(*args, **kwargs):
     # Flask SQLAlchemy will automatically create new sessions for you from
