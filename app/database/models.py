@@ -5,9 +5,9 @@ from app.database import db
 class Item(db.Model):
     __tablename__ = 'items'
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(64))
-    icon = db.Column(db.String(128))
-    description = db.Column(db.String(128))
+    name = db.Column(db.Text())
+    icon = db.Column(db.Text())
+    description = db.Column(db.Text())
     type_id = db.Column(db.Integer, db.ForeignKey('types.id'))
     rarity_id = db.Column(db.Integer, db.ForeignKey('rarities.id'))
     level = db.Column(db.Integer)
@@ -20,23 +20,23 @@ class Item(db.Model):
 class Type(db.Model):
     __tablename__ = 'types'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    name = db.Column(db.Text())
     items = db.relationship('Item', backref='type')
 
 
 class Rarity(db.Model):
     __tablename__ = 'rarities'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    name = db.Column(db.Text())
     items = db.relationship('Item', backref='rarity')
 
 
 class Currency(db.Model):
     __tablename__ = 'currencies'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    description = db.Column(db.String(128))
-    icon = db.Column(db.String(128))
+    name = db.Column(db.Text())
+    description = db.Column(db.Text())
+    icon = db.Column(db.Text())
     order = db.Column(db.Integer)
     archiveData = db.relationship('WalletData', backref='currency')
 
