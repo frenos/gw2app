@@ -2,16 +2,15 @@ from flask import Flask
 from celery import Celery
 
 from app.database import db
-from app.extensions import celery, bootstrap, moment
-from app import config
+from app.extensions import celery, bootstrap, moment, config
 import app.utils as utils
 from app.gw2db import gw2db
 from app.gw2api import gw2api
 
 
-def create_app(config=config.base_config):
+def create_app(_config=config):
     app = Flask(__name__)
-    app.config.from_object(config)
+    app.config.from_object(_config)
 
     register_extensions(app)
     register_blueprints(app)
@@ -22,7 +21,7 @@ def create_app(config=config.base_config):
 
 def create_celery_app(app=None):
     app = app or create_app(config)
-    app.config.from_object(config.base_config)
+    app.config.from_object(config)
     celery = Celery(__name__, broker=app.config['CELERY_BROKER_URL'])
     celery.conf.update(app.config)
     TaskBase = celery.Task

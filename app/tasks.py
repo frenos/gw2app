@@ -7,8 +7,8 @@ from app.gw2db.itemDb import ItemDb
 from app import config
 from app.extensions import celery
 
-myAccountDb = AccountDb(api_key=config.base_config.GW2_API_KEY)
-myItemDb = ItemDb(api_key=config.base_config.GW2_API_KEY)
+myAccountDb = AccountDb(api_key=config.GW2_API_KEY)
+myItemDb = ItemDb(api_key=config.GW2_API_KEY)
 celery = create_celery_app()
 
 

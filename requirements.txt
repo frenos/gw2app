@@ -3,6 +3,7 @@ amqp==1.4.7
 anyjson==0.3.3
 billiard==3.3.0.20
 celery==3.1.18
+chartkick==0.4.2
 dominate==2.1.16
 Flask==0.10.1
 Flask-Bootstrap==3.3.5.6

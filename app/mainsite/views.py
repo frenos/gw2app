@@ -38,7 +38,14 @@ def accountWalletDetail(currencyID):
     if not currencyInfo:
         return index()
     archiveData = currencyInfo.archiveData
-    return render_template('account_wallet_currency.html', currencyInfo=currencyInfo, archiveData=archiveData)
+    chartData = []
+    # daten umformatieren fuer Charts
+    for archiveItem in archiveData:
+        chartData.append([str(archiveItem.time), int(archiveItem.value)])
+    # archiveData umdrehen so das neueste Daten oben sind
+    archiveData = list(reversed(archiveData))
+    return render_template('account_wallet_currency.html', currencyInfo=currencyInfo, archiveData=archiveData,
+                           chartData=chartData)
 
 
 @mainsite.route('/account/bank')
