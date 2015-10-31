@@ -44,6 +44,17 @@ class ApiClient:
         response = self.httpSession.get(url=url, params=params)
         return response.json()
 
+    def getItemIdsChunked(self):
+        allItemIds = self.getItemIds()
+
+        # allItemIds hat Liste ueber alle Ids, api nimmt aber nur 200 api pro call
+        # splitten in Liste mit 200er Chunks
+        itemIdChunkList = []
+        for i in range(0, len(allItemIds), 200):
+            itemIdChunkList.append(allItemIds[i:i + 200])
+        # itemIdChunkList hat etwa 250 Listen mit je 200 Items
+        return itemIdChunkList
+
     def getItems(self, itemIds):
         # workaround fuer ids-parameter:
         # api braucht ids=1,2,3
@@ -70,15 +81,7 @@ class ApiClient:
 
 
     def getAllItems(self):
-        allItemIds = self.getItemIds()
-
-        # allItemIds hat Liste ueber alle Ids, api nimmt aber nur 200 api pro call
-        # splitten in Liste mit 200er Chunks
-        itemIdChunkList = []
-        for i in range(0, len(allItemIds), 200):
-            itemIdChunkList.append(allItemIds[i:i + 200])
-        # itemIdChunkList hat etwa 250 Listen mit je 200 Items
-
+        itemIdChunkList = self.getItemIdsChunked()
         allItems = []
         for chunk in itemIdChunkList:
             allItems.extend(self.getItems(chunk))

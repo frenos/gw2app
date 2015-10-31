@@ -9,8 +9,15 @@ class ItemDb:
     def __init__(self, api_key):
         self.apiClient = ApiClient(api_key)
 
-    def updateItems(self):
-        allItemInformation = self.apiClient.getAllItems()
+    def getItemsChunked(self):
+        return self.apiClient.getItemIdsChunked()
+
+    def updateItems(self, itemList=None):
+        if itemList:
+            allItemInformation = self.apiClient.getItems(itemList)
+        else:
+            allItemInformation = self.apiClient.getAllItems()
+
         for item in allItemInformation:
             itemId = item['id']
             # prep values and errorcheck
@@ -35,7 +42,7 @@ class ItemDb:
             else:
                 newVendVal = 0
 
-            itemObject = Item.query.get(id=itemId)
+            itemObject = Item.query.get(itemId)
             if itemObject:
 
                 itemObject.name = newName
@@ -59,7 +66,7 @@ class ItemDb:
                     vendor_value=newVendVal,
                 )
                 db.session.add(newItem)
-            db.session.commit()
+        db.session.commit()
 
     def getTypeObj(self, myType):
         typeObject = Type.query.filter_by(name=myType).first()

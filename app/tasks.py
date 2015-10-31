@@ -1,4 +1,5 @@
 from celery.signals import task_postrun
+from celery import group
 
 from factory_celery import create_celery_app
 from app.database import db
@@ -22,7 +23,15 @@ def getWalletData_async():
 @celery.task(base=celery.Task)
 def updateItems_async():
     celery = create_celery_app()
-    myItemDb.updateItems()
+    allIds = myItemDb.getItemsChunked()
+    jobs = group(updateItemsfromList(chunk) for chunk in allIds)()
+
+
+@celery.task(base=celery.Task)
+def updateItemsfromList(itemList):
+    celery = create_celery_app()
+
+    myItemDb.updateItems(itemList)
 
 
 @celery.task(base=celery.Task)
