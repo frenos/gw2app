@@ -24,7 +24,7 @@
                 <tr>
                     <td><img src="{{ item.icon }}" width="32"></td>
                     <td> {{ item.id }}</td>
-                    <td> {{ item.name }}</td>
+                    <td><a href="{{ url_for('mainsite.itemsDetails', itemid=item.id) }}"> {{ item.name }} </a></td>
                     <td> {{ item.level }}</td>
                     {% if item.priceData[0] is defined %}
                         <td>{{ render_coin(item.priceData[0].sellPrice) }}</td>

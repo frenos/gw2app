@@ -1,0 +1,77 @@
+{% from "macros.html" import render_coin %}
+{% extends "base.html" %}
+
+{% block title %}Gw2App - ItemDB - Details{% endblock %}
+
+{% block page_content %}
+    <div class="page-header">
+        <h1><img src="{{ item.icon }}"> {{ item.name }} - Item Detail:</h1>
+
+        <h2> Common Information:</h2>
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Name</td>
+                <td>{{ item.name }}</td>
+            </tr>
+            <tr>
+                <td>Level</td>
+                <td>{{ item.level }}</td>
+            </tr>
+            <tr>
+                <td>Rarity</td>
+                <td>{{ item.rarity.name }}</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>{{ item.type.name }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <h2> Price Information:</h2>
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Vendor</td>
+                <td>{{ item.vendor_value }}</td>
+            </tr>
+            {% if item.priceData[0] is defined %}
+                <tr>
+                    <td>Buy Price</td>
+                    <td>{{ render_coin(item.priceData[0].buyPrice) }}</td>
+                </tr>
+                <tr>
+                    <td>Buy Quantity</td>
+                    <td>{{ item.priceData[0].buyQuantity }}</td>
+                </tr>
+                <tr>
+                    <td>Sell Price</td>
+                    <td>{{ render_coin(item.priceData[0].sellPrice) }}</td>
+                </tr>
+                <tr>
+                    <td>Sell Quantity</td>
+                    <td>{{ item.priceData[0].sellQuantity }}</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        {% if item.priceData[0] is defined %}
+            <h1>Price History</h1>
+            TODO: Gw2Spidy History Diagram
+        {% endif %}
+
+    </div>
+
+{% endblock %}

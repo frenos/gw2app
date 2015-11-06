@@ -6,8 +6,7 @@ from datetime import datetime
 
 from flask import render_template
 from ..database.models import Currency, BankSlot, Item
-from ..tasks import updatePrices_async
-
+from ..tasks import updatePrices_async, updateItems_async, updateBank_async
 
 @mainsite.route('/')
 def index():
@@ -65,11 +64,17 @@ def items(page=1):
     pagination = Item.query.paginate(page, 50, False)
     return render_template('items.html', pagination=pagination)
 
+
+@mainsite.route('/items/details/<int:itemid>')
+def itemsDetails(itemid):
+    itemObj = Item.query.get(itemid)
+    return render_template('items_details.html', item=itemObj)
+
 @mainsite.route('/testupdate')
 def testUpdate():
     # getWalletData_async.delay()
-    # updateItems_async.delay()
-    # updateBank_async.delay()
+    updateItems_async.delay()
+    updateBank_async.delay()
     updatePrices_async.delay()
 
     return render_template('index.html', current_time=datetime.utcnow())
