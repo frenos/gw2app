@@ -20,6 +20,10 @@ class ItemDb:
 
         for priceInfo in allItemPrices:
             itemId = priceInfo['id']
+            # check if we know the item before:
+            itemObj = Item.query.get(int(itemId))
+            if not itemObj:
+                continue
             buyQuantity = priceInfo['buys']['quantity']
             buyPrice = priceInfo['buys']['unit_price']
             sellQuantity = priceInfo['sells']['quantity']

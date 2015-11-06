@@ -1,5 +1,4 @@
 from celery.signals import task_postrun
-from celery import group
 
 from factory_celery import create_celery_app
 from app.database import db
@@ -24,7 +23,9 @@ def getWalletData_async():
 def updateItems_async():
     celery = create_celery_app()
     allIds = myItemDb.getItemsChunked()
-    jobs = group(updateItemsfromList(chunk) for chunk in allIds).delay()
+    for chunk in allIds:
+        updateItemsfromList.delay(chunk)
+        # jobs = group(updateItemsfromList(chunk) for chunk in allIds).delay()
 
 
 @celery.task(base=celery.Task)
@@ -37,7 +38,9 @@ def updateItemsfromList(itemList):
 def updatePrices_async():
     celery = create_celery_app()
     allIds = myItemDb.getPriceIdChunked()
-    jobs = group(updatePricesfromList(chunk) for chunk in allIds).delay()
+    for chunk in allIds:
+        updatePricesfromList.delay(chunk)
+        #jobs = group(updatePricesfromList(chunk) for chunk in allIds).delay()
 
 
 @celery.task(base=celery.Task)

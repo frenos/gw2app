@@ -44,7 +44,7 @@
 {%- endmacro %}
 
 {% macro render_coin(money_int) -%}
-    {{ money_int//10000 }}<img src="{{ url_for('static', filename='img/Gold_coin.png') }}"> {{ (money_int//100)%100 }}
+    {{ money_int//10000 }} <img src="{{ url_for('static', filename='img/Gold_coin.png') }}"> {{ (money_int//100)%100 }}
     <img src="{{ url_for('static', filename='img/Silver_coin.png') }}"> {{ money_int%100 }}
     <img src="{{ url_for('static', filename='img/Copper_coin.png') }}">
 {%- endmacro %}

@@ -17,7 +17,6 @@
                 <th>Name</th>
                 <th>Level</th>
                 <th>Price</th>
-                <th>temp</th>
             </tr>
             </thead>
             <tbody>
@@ -29,11 +28,6 @@
                     <td> {{ item.level }}</td>
                     {% if item.priceData[0] is defined %}
                         <td>{{ render_coin(item.priceData[0].sellPrice) }}</td>
-                    {% else %}
-                        <td></td>
-                    {% endif %}
-                    {% if item.priceData[0] is defined %}
-                        <td>{{ item.priceData[0].sellPrice }}</td>
                     {% else %}
                         <td></td>
                     {% endif %}
