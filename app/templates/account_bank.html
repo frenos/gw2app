@@ -18,9 +18,11 @@
             <tbody>
             {% for bankSlot in bankInfo %}
                 <tr>
-                    {% if bankSlot.item is defined %}
+                    {% if bankSlot.itemID is not none %}
                         <td><img src="{{ bankSlot.item.icon }}" width="32"></td>
-                        <td> {{ bankSlot.item.name }}</td>
+                        <td>
+                            <a href="{{ url_for('mainsite.itemsDetails', itemid=bankSlot.itemID) }}">{{ bankSlot.item.name }}</a>
+                        </td>
                     {% else %}
                         <td></td>
                         <td></td>
