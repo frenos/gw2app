@@ -16,7 +16,7 @@ class Item(db.Model):
     # TODO:cross-reference Skin-ID to Skin-Api?
     default_skin = db.Column(db.Integer)
     bankslots = db.relationship('BankSlot', backref='item')
-
+    priceData = db.relationship('PriceData')
 
 class Type(db.Model):
     __tablename__ = 'types'
@@ -41,6 +41,13 @@ class Currency(db.Model):
     order = db.Column(db.Integer)
     archiveData = db.relationship('WalletData', backref='currency')
 
+class PriceData(db.Model):
+    __tablename__ = 'pricedata'
+    id = db.Column(db.Integer, db.ForeignKey('items.id'), primary_key=True)
+    buyQuantity = db.Column(db.Integer)
+    buyPrice = db.Column(db.Integer)
+    sellQuantity = db.Column(db.Integer)
+    sellPrice = db.Column(db.Integer)
 
 class WalletData(db.Model):
     __tablename__ = 'walletdata'

@@ -24,7 +24,7 @@ def getWalletData_async():
 def updateItems_async():
     celery = create_celery_app()
     allIds = myItemDb.getItemsChunked()
-    jobs = group(updateItemsfromList(chunk) for chunk in allIds)()
+    jobs = group(updateItemsfromList(chunk) for chunk in allIds).delay()
 
 
 @celery.task(base=celery.Task)
@@ -32,6 +32,18 @@ def updateItemsfromList(itemList):
     celery = create_celery_app()
 
     myItemDb.updateItems(itemList)
+
+@celery.task(base=celery.Task)
+def updatePrices_async():
+    celery = create_celery_app()
+    allIds = myItemDb.getPriceIdChunked()
+    jobs = group(updatePricesfromList(chunk) for chunk in allIds).delay()
+
+
+@celery.task(base=celery.Task)
+def updatePricesfromList(itemList):
+    celery = create_celery_app()
+    myItemDb.updatePrices(itemList)
 
 
 @celery.task(base=celery.Task)

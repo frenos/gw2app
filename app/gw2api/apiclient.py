@@ -117,6 +117,45 @@ class ApiClient:
         response = self.httpSession.get(url=url, params=params)
         return response.json()
 
+    def getPriceIds(self):
+        """ gets all available price-ids
+                returns them in a list
+        """
+        url = apiBaseUrl + apiEndpoints["ItemPrices"]
+        params = {"lang": apiLanguage}
+        response = self.httpSession.get(url=url, params=params)
+        return response.json()
+
+    def getPriceIdsChunked(self):
+        allPriceIds = self.getPriceIds()
+
+        # allItemIds hat Liste ueber alle Ids, api nimmt aber nur 200 api pro call
+        # splitten in Liste mit 200er Chunks
+        priceIdChunkList = []
+        for i in range(0, len(allPriceIds), 200):
+            priceIdChunkList.append(allPriceIds[i:i + 200])
+        # itemIdChunkList hat etwa 250 Listen mit je 200 Items
+        return priceIdChunkList
+
+    def getPrices(self, priceIds):
+        idsString = ",".join(str(x) for x in priceIds)
+        return self.getPrice(idsString=idsString)
+
+    def getPrice(self, itemId=None, idsString=None):
+        url = apiBaseUrl + apiEndpoints["ItemPrices"]
+
+        if idsString:
+            ids = idsString
+        elif itemId:
+            ids = itemId
+
+        params = {
+            "lang": apiLanguage,
+            "ids": ids
+        }
+        response = self.httpSession.get(url=url, params=params)
+        return response.json()
+
     def getWalletContent(self):
         url = apiBaseUrl + apiEndpoints["AccountWallet"]
         params = {

@@ -5,7 +5,8 @@ __author__ = 'Frenos'
 from datetime import datetime
 
 from flask import render_template
-from ..database.models import Currency, BankSlot
+from ..database.models import Currency, BankSlot, Item
+from ..tasks import updatePrices_async
 
 
 @mainsite.route('/')
@@ -58,8 +59,17 @@ def user(name):
     return render_template('user.html', name=name)
 
 
+@mainsite.route('/items')
+@mainsite.route('/items/<int:page>')
+def items(page=1):
+    pagination = Item.query.paginate(page, 50, False)
+    return render_template('items.html', pagination=pagination)
+
 @mainsite.route('/testupdate')
 def testUpdate():
     # getWalletData_async.delay()
-    # tasks.updateWalletData_async.delay()
+    # updateItems_async.delay()
+    # updateBank_async.delay()
+    updatePrices_async.delay()
+
     return render_template('index.html', current_time=datetime.utcnow())

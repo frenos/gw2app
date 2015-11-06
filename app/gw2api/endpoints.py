@@ -8,7 +8,8 @@ apiEndpoints = {
     "AccountWallet": "/v2/account/wallet",
     "Characters": "/v2/characters",
     "Items": "/v2/items",
-    "Currencies": "/v2/currencies"
+    "Currencies": "/v2/currencies",
+    "ItemPrices" : "/v2/commerce/prices"
 }
 
 apiLanguage = "de"

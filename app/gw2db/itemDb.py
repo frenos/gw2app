@@ -2,12 +2,47 @@ __author__ = 'Frenos'
 
 from ..gw2api.apiclient import ApiClient
 from ..database import db
-from ..database.models import Item, Rarity, Type
+from ..database.models import Item, Rarity, Type, PriceData
 
 
 class ItemDb:
     def __init__(self, api_key):
         self.apiClient = ApiClient(api_key)
+
+    def getPriceIdChunked(self):
+        return self.apiClient.getPriceIdsChunked()
+
+    def updatePrices(self, itemList=None):
+        if itemList:
+            allItemPrices = self.apiClient.getPrices(itemList)
+        else:
+            allItemPrices = self.apiClient.getAllPrices()
+
+        for priceInfo in allItemPrices:
+            itemId = priceInfo['id']
+            buyQuantity = priceInfo['buys']['quantity']
+            buyPrice = priceInfo['buys']['unit_price']
+            sellQuantity = priceInfo['sells']['quantity']
+            sellPrice = priceInfo['sells']['unit_price']
+
+            priceDataObj = PriceData.query.get(itemId)
+            if priceDataObj:
+                priceDataObj.id = itemId
+                priceDataObj.buyQuantity = buyQuantity
+                priceDataObj.buyPrice = buyPrice
+                priceDataObj.sellQuantity = sellQuantity
+                priceDataObj.sellPrice = sellPrice
+                db.session.add(priceDataObj)
+            else:
+                newPriceData = PriceData(
+                    id=itemId,
+                    buyQuantity=buyQuantity,
+                    buyPrice=buyPrice,
+                    sellQuantity=sellQuantity,
+                    sellPrice=sellPrice
+                )
+                db.session.add(newPriceData)
+        db.session.commit()
 
     def getItemsChunked(self):
         return self.apiClient.getItemIdsChunked()
