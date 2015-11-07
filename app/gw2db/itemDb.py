@@ -2,7 +2,7 @@ __author__ = 'Frenos'
 
 from ..gw2api.apiclient import ApiClient
 from ..database import db
-from ..database.models import Item, Rarity, Type, PriceData
+from ..database.models import Item, Rarity, Type, PriceData, ItemFlag, ItemGameType, ItemRestriction
 
 
 class ItemDb:
@@ -72,6 +72,19 @@ class ItemDb:
                 newDescription = item['description']
             else:
                 newDescription = None
+            if 'flags' in item and len(item['flags']) > 0:
+                flags = item['flags']
+            else:
+                flags = None
+            if 'game_types' in item and len(item['game_types']) > 0:
+                game_types = item['game_types']
+            else:
+                game_types = None
+            if 'restrictions' in item and len(item['restrictions']) > 0:
+                restrictions = item['restrictions']
+            else:
+                restrictions = None
+
             if 'level' in item:
                 newLevel = item['level']
             else:
@@ -91,9 +104,39 @@ class ItemDb:
                 itemObject.rarity = self.getRarityObj(item['rarity'])
                 itemObject.level = newLevel
                 itemObject.vendor_value = newVendVal
+                if flags:
+                    for flag in flags:
+                        if flag not in itemObject.flags:
+                            newFlag = ItemFlag(itemId=itemId, flag=flag)
+                            itemObject.flags.append(newFlag)
+                if game_types:
+                    for game_type in game_types:
+                        if game_type not in itemObject.game_types:
+                            newGameType = ItemGameType(itemId=itemId, game_type=game_type)
+                            itemObject.game_types.append(newGameType)
+                if restrictions:
+                    for restriction in restrictions:
+                        if restriction not in itemObject.restrictions:
+                            newRestriction = ItemRestriction(itemId=itemId, restriction=restriction)
+                            itemObject.restrictions.append(newRestriction)
                 db.session.add(itemObject)
 
             else:
+                newFlags = []
+                if flags:
+                    for flag in flags:
+                        newFlag = ItemFlag(itemId=itemId, flag=flag)
+                        newFlags.append(newFlag)
+                newGameTypes = []
+                if game_types:
+                    for game_type in game_types:
+                        newGameType = ItemGameType(itemId=itemId, game_type=game_type)
+                        newGameTypes.append(newGameType)
+                newRestrictions = []
+                if restrictions:
+                    for restriction in restrictions:
+                        newRestriction = ItemRestriction(itemId=itemId, restriction=restriction)
+                        newRestrictions.append(newRestriction)
                 newItem = Item(
                     id=itemId,
                     name=newName,
@@ -103,6 +146,9 @@ class ItemDb:
                     rarity=self.getRarityObj(item['rarity']),
                     level=newLevel,
                     vendor_value=newVendVal,
+                    flags=newFlags,
+                    game_types=newGameTypes,
+                    restrictions=newRestrictions
                 )
                 db.session.add(newItem)
         db.session.commit()

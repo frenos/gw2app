@@ -12,11 +12,34 @@ class Item(db.Model):
     rarity_id = db.Column(db.Integer, db.ForeignKey('rarities.id'))
     level = db.Column(db.Integer)
     vendor_value = db.Column(db.Integer)
-
+    flags = db.relationship('ItemFlag', backref='item')
+    game_types = db.relationship('ItemGameType', backref='item')
+    restrictions = db.relationship('ItemRestriction', backref='item')
     # TODO:cross-reference Skin-ID to Skin-Api?
     default_skin = db.Column(db.Integer)
     bankslots = db.relationship('BankSlot', backref='item')
     priceData = db.relationship('PriceData')
+
+
+class ItemFlag(db.Model):
+    __tablename__ = 'itemflags'
+    id = db.Column(db.Integer, primary_key=True)
+    itemId = db.Column(db.Integer, db.ForeignKey('items.id'))
+    flag = db.Column(db.Text())
+
+
+class ItemGameType(db.Model):
+    __tablename__ = 'itemgametypes'
+    id = db.Column(db.Integer, primary_key=True)
+    itemId = db.Column(db.Integer, db.ForeignKey('items.id'))
+    game_type = db.Column(db.Text())
+
+
+class ItemRestriction(db.Model):
+    __tablename__ = 'itemrestrictions'
+    id = db.Column(db.Integer, primary_key=True)
+    itemId = db.Column(db.Integer, db.ForeignKey('items.id'))
+    restriction = db.Column(db.Text())
 
 class Type(db.Model):
     __tablename__ = 'types'
