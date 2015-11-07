@@ -106,17 +106,22 @@ class ItemDb:
                 itemObject.vendor_value = newVendVal
                 if flags:
                     for flag in flags:
-                        if flag not in itemObject.flags:
+                        flagObj = ItemFlag.query.filter_by(itemId=itemId).filter_by(flag=flag).first()
+                        if not flagObj:
                             newFlag = ItemFlag(itemId=itemId, flag=flag)
                             itemObject.flags.append(newFlag)
                 if game_types:
                     for game_type in game_types:
-                        if game_type not in itemObject.game_types:
+                        game_typeObj = ItemGameType.query.filter_by(itemId=itemId).filter_by(
+                            game_type=game_type).first()
+                        if not game_typeObj:
                             newGameType = ItemGameType(itemId=itemId, game_type=game_type)
                             itemObject.game_types.append(newGameType)
                 if restrictions:
                     for restriction in restrictions:
-                        if restriction not in itemObject.restrictions:
+                        restrictionObj = ItemRestriction.query.filter_by(itemId=itemId).filter_by(
+                            restriction=restriction).first()
+                        if not restrictionObj:
                             newRestriction = ItemRestriction(itemId=itemId, restriction=restriction)
                             itemObject.restrictions.append(newRestriction)
                 db.session.add(itemObject)
