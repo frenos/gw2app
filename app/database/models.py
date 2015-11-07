@@ -55,6 +55,27 @@ class Rarity(db.Model):
     items = db.relationship('Item', backref='rarity')
 
 
+class TPTransaction(db.Model):
+    __tablename__ = 'TPtransactions'
+    id = db.Column(db.BigInteger, primary_key=True)
+    created = db.Column(db.DateTime)
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'))
+    type = db.Column(db.Text)
+    price = db.Column(db.Integer)
+    purchased = db.Column(db.DateTime)
+    quantity = db.Column(db.Integer)
+
+
+class TPTransaction_broken(db.Model):
+    __tablename__ = 'TPtransactions_broken'
+    id = db.Column(db.BigInteger, primary_key=True)
+    created = db.Column(db.DateTime)
+    item_id = db.Column(db.Integer)
+    type = db.Column(db.Text)
+    price = db.Column(db.Integer)
+    purchased = db.Column(db.DateTime)
+    quantity = db.Column(db.Integer)
+
 class Currency(db.Model):
     __tablename__ = 'currencies'
     id = db.Column(db.Integer, primary_key=True)

@@ -133,3 +133,33 @@ class ApiClient:
         }
         response = self.httpSession.get(url=url, params=params)
         return response.json()
+
+    def getTransactionsHistory(self, sells=None, buys=None):
+        url = apiBaseUrl + apiEndpoints["AccountTransactions"] + "/history"
+        if sells:
+            url = url + "/sells"
+        elif buys:
+            url = url + "/buys"
+        page = 0
+        page_size = 200
+        params = {
+            "lang": apiLanguage,
+            "access_token": self.api_key,
+            "page": page,
+            "page_size": page_size
+        }
+        myTransactions = []
+        response = self.httpSession.get(url=url, params=params)
+        Transactions = response.json()
+        myTransactions.extend(Transactions)
+        if 'next' in response.links:
+            while True:
+                page = page + 1
+                params["page"] = page
+                print("getting page " + str(page))
+                response = self.httpSession.get(url=url, params=params)
+                Transactions = response.json()
+                myTransactions.extend(Transactions)
+                if not 'next' in response.links:
+                    break
+        return myTransactions

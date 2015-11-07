@@ -3,7 +3,8 @@ from datetime import datetime
 __author__ = 'Frenos'
 from ..gw2api.apiclient import ApiClient
 from ..database import db
-from ..database.models import WalletData, Currency, BankSlot, Item
+from ..database.models import WalletData, Currency, BankSlot, Item, TPTransaction, TPTransaction_broken
+import dateutil.parser
 
 
 class AccountDb:
@@ -115,3 +116,47 @@ class AccountDb:
                 newBankSlot = BankSlot(id=slotId, item=item, count=count)
                 db.session.add(newBankSlot)
                 db.session.commit()
+
+    def getTransactions(self):
+        transactions = self.apiClient.getTransactionsHistory(sells=True)
+        self.writeTransactions(transactions, sells=True)
+        transactions = self.apiClient.getTransactionsHistory(buys=True)
+        self.writeTransactions(transactions, buys=True)
+
+    def writeTransactions(self, transactions, sells=None, buys=None):
+        if sells:
+            type = 'sell'
+        elif buys:
+            type = 'buy'
+        else:
+            type = 'error'
+        for transaction in transactions:
+            transactionObj = TPTransaction.query.get(long(transaction['id']))
+            if not transactionObj:
+                id = transaction['id']
+                created = dateutil.parser.parse(transaction['created'])
+                item_id = int(transaction['item_id'])
+                price = transaction['price']
+                purchased = dateutil.parser.parse(transaction['purchased'])
+                quantity = transaction['quantity']
+                itemObj = Item.query.get(item_id)
+                if itemObj:
+                    newTransaction = TPTransaction(id=id,
+                                                   created=created,
+                                                   item_id=item_id,
+                                                   type=type,
+                                                   price=price,
+                                                   purchased=purchased,
+                                                   quantity=quantity)
+                    db.session.add(newTransaction)
+                else:
+                    if not TPTransaction_broken.query.get(id):
+                        newTransaction = TPTransaction_broken(id=id,
+                                                              created=created,
+                                                              item_id=item_id,
+                                                              type=type,
+                                                              price=price,
+                                                              purchased=purchased,
+                                                              quantity=quantity)
+                        db.session.add(newTransaction)
+        db.session.commit()

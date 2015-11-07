@@ -18,20 +18,22 @@ def getWalletData_async():
     myAccountDb.updateCurrencies()
     myAccountDb.getWalletData()
 
-
 @celery.task(base=celery.Task)
 def updateItems_async():
     celery = create_celery_app()
     allIds = myItemDb.getItemsChunked()
     for chunk in allIds:
         updateItemsfromList.delay(chunk)
-        # jobs = group(updateItemsfromList(chunk) for chunk in allIds).delay()
 
+
+@celery.task(base=celery.Task)
+def updateTransactions_async():
+    celery = create_celery_app()
+    myAccountDb.getTransactions()
 
 @celery.task(base=celery.Task)
 def updateItemsfromList(itemList):
     celery = create_celery_app()
-
     myItemDb.updateItems(itemList)
 
 @celery.task(base=celery.Task)

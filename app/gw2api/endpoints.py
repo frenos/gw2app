@@ -6,6 +6,7 @@ apiEndpoints = {
     "Account": "/v2/account",
     "AccountBank": "/v2/account/bank",
     "AccountWallet": "/v2/account/wallet",
+    "AccountTransactions": "/v2/commerce/transactions",
     "Characters": "/v2/characters",
     "Items": "/v2/items",
     "Currencies": "/v2/currencies",
