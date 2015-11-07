@@ -14,7 +14,7 @@ class ItemDb:
 
     def updatePrices(self, itemList=None):
         if itemList:
-            allItemPrices = self.apiClient.getPrices(itemList)
+            allItemPrices = self.apiClient.getPrice(idsString=itemList)
         else:
             allItemPrices = self.apiClient.getAllPrices()
 
@@ -53,7 +53,7 @@ class ItemDb:
 
     def updateItems(self, itemList=None):
         if itemList:
-            allItemInformation = self.apiClient.getItems(itemList)
+            allItemInformation = self.apiClient.getItem(idsString=itemList)
         else:
             allItemInformation = self.apiClient.getAllItems()
 

@@ -64,7 +64,7 @@ class AccountDb:
             if bankSlot[1]:
                 item = Item.query.get(bankSlot[1]['id'])
                 if not item:
-                    itemResponse = self.apiClient.getItem(bankSlot[1]['id'])
+                    itemResponse = self.apiClient.getItem(itemId=bankSlot[1]['id'])
                     for item in itemResponse:
                         itemId = item['id']
                         # prep values and errorcheck

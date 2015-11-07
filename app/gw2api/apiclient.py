@@ -3,6 +3,7 @@ __author__ = 'Frenos'
 import requests
 
 from .endpoints import apiEndpoints, apiBaseUrl, apiLanguage
+from helpers import idList2String, idList2Chunks
 
 
 class ApiClient:
@@ -46,61 +47,40 @@ class ApiClient:
 
     def getItemIdsChunked(self):
         allItemIds = self.getItemIds()
-
-        # allItemIds hat Liste ueber alle Ids, api nimmt aber nur 200 api pro call
-        # splitten in Liste mit 200er Chunks
-        itemIdChunkList = []
-        for i in range(0, len(allItemIds), 200):
-            itemIdChunkList.append(allItemIds[i:i + 200])
-        # itemIdChunkList hat etwa 250 Listen mit je 200 Items
-        return itemIdChunkList
-
-    def getItems(self, itemIds):
-        # workaround fuer ids-parameter:
-        # api braucht ids=1,2,3
-        # request-param mit list erzeugt aber ids=1&ids=2...
-        # daher liste in String und param als String
-        # TODO: research more
-        idsString = ",".join(str(x) for x in itemIds)
-        return self.getItem(idsString=idsString)
+        return idList2Chunks(allItemIds)
 
     def getItem(self, itemId=None, idsString=None):
         url = apiBaseUrl + apiEndpoints["Items"]
 
         if idsString:
-            ids = idsString
+            ids = idList2String(idsString)
         elif itemId:
             ids = itemId
 
         params = {
-                "lang": apiLanguage,
-                "ids": ids
+            "lang": apiLanguage,
+            "ids": ids
         }
         response = self.httpSession.get(url=url, params=params)
         return response.json()
-
 
     def getAllItems(self):
         itemIdChunkList = self.getItemIdsChunked()
         allItems = []
         for chunk in itemIdChunkList:
-            allItems.extend(self.getItems(chunk))
-
+            allItems.extend(self.getItem(idsString=chunk))
         return allItems
 
-
     def getBankContent(self):
-        url = apiBaseUrl+apiEndpoints["AccountBank"]
+        url = apiBaseUrl + apiEndpoints["AccountBank"]
         params = {
-            "lang" : apiLanguage,
-            "access_token" : self.api_key
+            "lang": apiLanguage,
+            "access_token": self.api_key
         }
         response = self.httpSession.get(url=url, params=params)
 
         bankContents = response.json()
         return bankContents
-
-
 
     def getCurrencies(self):
         url = apiBaseUrl + apiEndpoints["Currencies"]
@@ -108,8 +88,8 @@ class ApiClient:
             "lang": apiLanguage
         }
         response = self.httpSession.get(url=url, params=params)
-        currencyIds = response.json()
-        idsString = ",".join(str(x) for x in currencyIds)
+        # feed response-list in helper to format it into a string ids=1,2,3
+        idsString = idList2String(response.json())
         params = {
             "lang": apiLanguage,
             "ids": idsString
@@ -128,24 +108,13 @@ class ApiClient:
 
     def getPriceIdsChunked(self):
         allPriceIds = self.getPriceIds()
-
-        # allItemIds hat Liste ueber alle Ids, api nimmt aber nur 200 api pro call
-        # splitten in Liste mit 200er Chunks
-        priceIdChunkList = []
-        for i in range(0, len(allPriceIds), 200):
-            priceIdChunkList.append(allPriceIds[i:i + 200])
-        # itemIdChunkList hat etwa 250 Listen mit je 200 Items
-        return priceIdChunkList
-
-    def getPrices(self, priceIds):
-        idsString = ",".join(str(x) for x in priceIds)
-        return self.getPrice(idsString=idsString)
+        return idList2Chunks(allPriceIds)
 
     def getPrice(self, itemId=None, idsString=None):
         url = apiBaseUrl + apiEndpoints["ItemPrices"]
 
         if idsString:
-            ids = idsString
+            ids = idList2String(idsString)
         elif itemId:
             ids = itemId
 
