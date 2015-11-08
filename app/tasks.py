@@ -27,6 +27,11 @@ def updateItems_async():
 
 
 @celery.task(base=celery.Task)
+def updatePvPMatches_async():
+    celery = create_celery_app()
+    myAccountDb.getPvpMatches()
+
+@celery.task(base=celery.Task)
 def updateTransactions_async():
     celery = create_celery_app()
     myAccountDb.getTransactions()

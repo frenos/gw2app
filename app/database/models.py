@@ -105,3 +105,16 @@ class BankSlot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     itemID = db.Column(db.Integer, db.ForeignKey('items.id'))
     count = db.Column(db.Integer)
+
+
+class PvpMatch(db.Model):
+    __tablename__ = 'pvpmatches'
+    id = db.Column(db.String(50), primary_key=True)
+    map_id = db.Column(db.Integer)
+    started = db.Column(db.DateTime)
+    ended = db.Column(db.DateTime)
+    result = db.Column(db.Text)
+    team = db.Column(db.Text)
+    profession = db.Column(db.Text)
+    score_red = db.Column(db.Integer)
+    score_blue = db.Column(db.Integer)

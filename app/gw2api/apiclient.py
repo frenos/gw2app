@@ -134,6 +134,26 @@ class ApiClient:
         response = self.httpSession.get(url=url, params=params)
         return response.json()
 
+    def getPvPMatchIds(self):
+        url = apiBaseUrl + apiEndpoints["PvpMatches"]
+        params = {
+            "lang": apiLanguage,
+            "access_token": self.api_key
+        }
+        response = self.httpSession.get(url=url, params=params)
+        return response.json()
+
+    def getPvPMatchDetails(self):
+        idsString = idList2String(self.getPvPMatchIds())
+        url = apiBaseUrl + apiEndpoints["PvpMatches"]
+        params = {
+            "lang": apiLanguage,
+            "access_token": self.api_key,
+            "ids": idsString
+        }
+        response = self.httpSession.get(url=url, params=params)
+        return response.json()
+
     def getTransactionsHistory(self, sells=None, buys=None):
         url = apiBaseUrl + apiEndpoints["AccountTransactions"] + "/history"
         if sells:

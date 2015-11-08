@@ -3,7 +3,7 @@ from datetime import datetime
 __author__ = 'Frenos'
 from ..gw2api.apiclient import ApiClient
 from ..database import db
-from ..database.models import WalletData, Currency, BankSlot, Item, TPTransaction, TPTransaction_broken
+from ..database.models import WalletData, Currency, BankSlot, Item, TPTransaction, TPTransaction_broken, PvpMatch
 import dateutil.parser
 
 
@@ -116,6 +116,34 @@ class AccountDb:
                 newBankSlot = BankSlot(id=slotId, item=item, count=count)
                 db.session.add(newBankSlot)
                 db.session.commit()
+
+    def getPvpMatches(self):
+        matches = self.apiClient.getPvPMatchDetails()
+        for match in matches:
+            matchObj = PvpMatch.query.get(match['id'])
+            if not matchObj:
+                id = match['id']
+                map_id = match['map_id']
+                started = dateutil.parser.parse(match['started'])
+                ended = dateutil.parser.parse(match['ended'])
+                result = match['result']
+                team = match['team']
+                profession = match['profession']
+                score_red = match['scores']['red']
+                score_blue = match['scores']['blue']
+                newMatch = PvpMatch(id=id,
+                                    map_id=map_id,
+                                    started=started,
+                                    ended=ended,
+                                    result=result,
+                                    team=team,
+                                    profession=profession,
+                                    score_red=score_red,
+                                    score_blue=score_blue
+                                    )
+                db.session.add(newMatch)
+        db.session.commit()
+
 
     def getTransactions(self):
         transactions = self.apiClient.getTransactionsHistory(sells=True)
