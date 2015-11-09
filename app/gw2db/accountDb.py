@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 __author__ = 'Frenos'
 from ..gw2api.apiclient import ApiClient
@@ -117,6 +117,7 @@ class AccountDb:
                 db.session.add(newBankSlot)
                 db.session.commit()
 
+
     def getPvpMatches(self):
         matches = self.apiClient.getPvPMatchDetails()
         for match in matches:
@@ -126,6 +127,9 @@ class AccountDb:
                 map_id = match['map_id']
                 started = dateutil.parser.parse(match['started'])
                 ended = dateutil.parser.parse(match['ended'])
+                # fix timestamps because api returns utc+8
+                started = started - timedelta(hours=8)
+                ended = ended - timedelta(hours=8)
                 result = match['result']
                 team = match['team']
                 profession = match['profession']
