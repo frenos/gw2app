@@ -10,6 +10,6 @@ from flask_bootstrap import Bootstrap
 
 bootstrap = Bootstrap()
 
-from config import base_config
+from config import dev_config
 
-config = base_config
+config = dev_config

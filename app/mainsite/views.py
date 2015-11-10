@@ -5,14 +5,15 @@ __author__ = 'Frenos'
 from datetime import datetime
 
 from flask import render_template
-from ..database.models import Currency, BankSlot, Item
-from ..tasks import updatePrices_async, updateItems_async, updateBank_async
+from ..database.models import Currency, BankSlot, Item, PvpMatch
+from ..tasks import updatePrices_async, updateItems_async, updateBank_async, updateTransactions_async, \
+    updatePvPMatches_async
+
 
 @mainsite.route('/')
 def index():
     return render_template('index.html',
                            current_time=datetime.utcnow())
-
 
 @mainsite.route('/account/wallet')
 def accountWallet():
@@ -58,6 +59,11 @@ def user(name):
     return render_template('user.html', name=name)
 
 
+@mainsite.route('/pvp/matches')
+def pvpMatches():
+    matches = PvpMatch.query.order_by(PvpMatch.started.desc()).all()
+    return render_template('pvp_matches.html', matches=matches)
+
 @mainsite.route('/items')
 @mainsite.route('/items/<int:page>')
 def items(page=1):
@@ -70,11 +76,13 @@ def itemsDetails(itemid):
     itemObj = Item.query.get(itemid)
     return render_template('items_details.html', item=itemObj)
 
-@mainsite.route('/testupdate')
-def testUpdate():
-    # getWalletData_async.delay()
-    updateItems_async.delay()
-    updateBank_async.delay()
-    updatePrices_async.delay()
 
-    return render_template('index.html', current_time=datetime.utcnow())
+@mainsite.route('/updateAll')
+def updateAll():
+    updateItems_async.delay()
+    updatePrices_async.delay()
+    updateBank_async.delay()
+    updateTransactions_async.delay()
+    updatePvPMatches_async.delay()
+    return render_template('index.html',
+                           current_time=datetime.utcnow())

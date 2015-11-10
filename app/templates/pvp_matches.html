@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Gw2App - PvP Matches{% endblock %}
+
+{% block page_content %}
+    <div class="page-header">
+        <h1>My PvP Matches:</h1>
+
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>started</th>
+                <th>map_id</th>
+                <th>duration</th>
+                <th>result</th>
+                <th>profession</th>
+                <th>own score</th>
+                <th>enemy score</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for match in matches %}
+                {% if match.result == 'Victory' %}
+                    <tr class="success">
+                        {% elif match.result == 'Defeat' %}
+                    <tr class="danger">
+                        {% else %}
+                    <tr>
+                {% endif %}
+            <td> {{ moment(match.started).fromNow(refresh=true) }}</td>
+            <td> {{ match.map_id }}</td>
+            <td> {{ match.ended - match.started }}</td>
+            <td> {{ match.result }}</td>
+            <td> {{ match.profession }}</td>
+            {% if match.team == 'Blue' %}
+                <td>{{ match.score_blue }}</td>
+                <td>{{ match.score_red }} </td>
+            {% elif match.team == 'Red' %}
+                <td>{{ match.score_red }}</td>
+                <td>{{ match.score_blue }}</td>
+            {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}
