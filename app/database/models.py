@@ -19,6 +19,7 @@ class Item(db.Model):
     default_skin = db.Column(db.Integer)
     bankslots = db.relationship('BankSlot', backref='item')
     priceData = db.relationship('PriceData')
+    transactions = db.relationship('TPTransaction', backref='item')
 
 
 class ItemFlag(db.Model):

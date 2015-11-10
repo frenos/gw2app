@@ -5,7 +5,7 @@ __author__ = 'Frenos'
 from datetime import datetime
 
 from flask import render_template
-from ..database.models import Currency, BankSlot, Item, PvpMatch
+from ..database.models import Currency, BankSlot, Item, PvpMatch, TPTransaction
 from ..tasks import updatePrices_async, updateItems_async, updateBank_async, updateTransactions_async, \
     updatePvPMatches_async
 
@@ -76,6 +76,12 @@ def itemsDetails(itemid):
     itemObj = Item.query.get(itemid)
     return render_template('items_details.html', item=itemObj)
 
+
+@mainsite.route('/transactions')
+@mainsite.route('/transactions/<int:page>')
+def transactions(page=1):
+    pagination = TPTransaction.query.order_by(TPTransaction.purchased.desc()).paginate(page, 25, False)
+    return render_template('transactions.html', pagination=pagination)
 
 @mainsite.route('/updateAll')
 def updateAll():
