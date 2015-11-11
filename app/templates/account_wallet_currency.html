@@ -1,3 +1,4 @@
+{% from "macros.html" import render_coin %}
 {% extends "base.html" %}
 
 {% block title %}Gw2App - Account Wallet{% endblock %}
@@ -29,7 +30,11 @@
                 <tr>
                     <td>{{ moment(data.time).format('LLL') }} </td>
                     <td>{{ moment(data.time).fromNow(refresh=True) }}</td>
+                    {% if currencyInfo.id == 1 %}
+                        <td>{{ render_coin(data.value) }}</td>
+                    {% else %}
                     <td>{{ data.value }}</td>
+                    {% endif %}
                 </tr>
 
             {% endfor %}
