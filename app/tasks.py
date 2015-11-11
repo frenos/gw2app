@@ -4,11 +4,13 @@ from factory_celery import create_celery_app
 from app.database import db
 from app.gw2db.accountDb import AccountDb
 from app.gw2db.itemDb import ItemDb
+from app.gw2db.commonDb import CommonDb
 from app import config
 from app.extensions import celery
 
 myAccountDb = AccountDb(api_key=config.GW2_API_KEY)
 myItemDb = ItemDb(api_key=config.GW2_API_KEY)
+myCommonDb = CommonDb(api_key=config.GW2_API_KEY)
 celery = create_celery_app()
 
 
@@ -25,6 +27,11 @@ def updateItems_async():
     for chunk in allIds:
         updateItemsfromList.delay(chunk)
 
+
+@celery.task(base=celery.Task)
+def updateMaps_async():
+    celery = create_celery_app()
+    myCommonDb.updateMaps()
 
 @celery.task(base=celery.Task)
 def updatePvPMatches_async():

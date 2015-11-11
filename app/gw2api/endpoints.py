@@ -11,7 +11,8 @@ apiEndpoints = {
     "Items": "/v2/items",
     "Currencies": "/v2/currencies",
     "ItemPrices": "/v2/commerce/prices",
-    "PvpMatches": "/v2/pvp/games"
+    "PvpMatches": "/v2/pvp/games",
+    "Maps": "/v2/maps"
 }
 
 apiLanguage = "de"

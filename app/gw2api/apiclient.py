@@ -36,6 +36,22 @@ class ApiClient:
         # TODO:Fehlercheck
         return response.json()
 
+    def getMaps(self):
+        url = apiBaseUrl + apiEndpoints["Maps"]
+        params = {"lang": apiLanguage}
+        response = self.httpSession.get(url=url, params=params)
+        mapIds = response.json()
+        mapData = []
+        if len(mapIds) > 0:
+            mapdIsChunked = idList2Chunks(mapIds)
+            for chunk in mapdIsChunked:
+                idsString = idList2String(chunk)
+                params = {"lang": apiLanguage,
+                          "ids": idsString}
+                response = self.httpSession.get(url=url, params=params)
+                mapData.extend(response.json())
+        return mapData
+
     def getItemIds(self):
         """ gets all available item-ids
                 returns them in a list

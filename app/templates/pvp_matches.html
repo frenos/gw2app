@@ -10,7 +10,7 @@
             <thead>
             <tr>
                 <th>started</th>
-                <th>map_id</th>
+                <th>map</th>
                 <th>duration</th>
                 <th>result</th>
                 <th>profession</th>
@@ -28,7 +28,7 @@
                     <tr>
                 {% endif %}
             <td> {{ moment(match.started).fromNow(refresh=true) }}</td>
-            <td> {{ match.map_id }}</td>
+            <td> {{ match.map.name }}</td>
             <td> {{ match.ended - match.started }}</td>
             <td> {{ match.result }}</td>
             <td> {{ match.profession }}</td>

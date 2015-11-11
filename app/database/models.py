@@ -111,7 +111,7 @@ class BankSlot(db.Model):
 class PvpMatch(db.Model):
     __tablename__ = 'pvpmatches'
     id = db.Column(db.String(50), primary_key=True)
-    map_id = db.Column(db.Integer)
+    map_id = db.Column(db.Integer, db.ForeignKey('maps.id'))
     started = db.Column(db.DateTime)
     ended = db.Column(db.DateTime)
     result = db.Column(db.Text)
@@ -119,3 +119,16 @@ class PvpMatch(db.Model):
     profession = db.Column(db.Text)
     score_red = db.Column(db.Integer)
     score_blue = db.Column(db.Integer)
+
+
+class Map(db.Model):
+    __tablename__ = 'maps'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    min_level = db.Column(db.Integer)
+    max_level = db.Column(db.Integer)
+    region_id = db.Column(db.Integer)
+    region_name = db.Column(db.Text)
+    continent_id = db.Column(db.Integer)
+    continent_name = db.Column(db.Text)
+    matches = db.relationship('PvpMatch', backref='map')
