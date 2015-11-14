@@ -8,10 +8,17 @@ import dateutil.parser
 
 
 class AccountDb:
+    """
+    Class for everything concerning the current account
+    """
     def __init__(self, api_key):
         self.apiClient = ApiClient(api_key)
 
     def updateCurrencies(self):
+        """
+        Will update the available currencies in the database.
+        @return: no return value
+        """
         currencies = self.apiClient.getCurrencies()
         for currency in currencies:
 
@@ -50,6 +57,10 @@ class AccountDb:
         db.session.commit()
 
     def getWalletData(self):
+        """
+        Will update the current state of wallet_data.
+        @return:
+        """
         walletData = self.apiClient.getWalletContent()
         for data in walletData:
             currencyObject = Currency.query.get(data['id'])
@@ -58,6 +69,10 @@ class AccountDb:
         db.session.commit()
 
     def getBankContent(self):
+        """
+        Will update the contents of the bank
+        @return: no return value
+        """
         bankContents = self.apiClient.getBankContent()
         # list(enumerate(list)) erzeugt neue list mit [(index, value), ..]
         for bankSlot in list(enumerate(bankContents)):
@@ -119,6 +134,10 @@ class AccountDb:
 
 
     def getPvpMatches(self):
+        """
+        Will update played pvp matches
+        @return: no return value
+        """
         matches = self.apiClient.getPvPMatchDetails()
         for match in matches:
             matchObj = PvpMatch.query.get(match['id'])
@@ -150,12 +169,23 @@ class AccountDb:
 
 
     def getTransactions(self):
+        """
+        Will get all buy and sell transactions
+        @return: no return value
+        """
         transactions = self.apiClient.getTransactionsHistory(sells=True)
         self.writeTransactions(transactions, sells=True)
         transactions = self.apiClient.getTransactionsHistory(buys=True)
         self.writeTransactions(transactions, buys=True)
 
     def writeTransactions(self, transactions, sells=None, buys=None):
+        """
+        Will write transactions to the database
+        @param transactions: transactions to work on, as iterable (for example list)
+        @param sells: set to True if transactions contains only sell-transactions
+        @param buys: set to True if transactions contains only buy-transactions
+        @return: no return value
+        """
         if sells:
             type = 'sell'
         elif buys:

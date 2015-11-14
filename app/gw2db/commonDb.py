@@ -10,6 +10,10 @@ class CommonDb:
         self.apiClient = ApiClient(api_key)
 
     def updateMaps(self):
+        """
+        Will update the available maps
+        @return: no return value
+        """
         mapData = self.apiClient.getMaps()
         if len(mapData) > 0:
             for map in mapData:

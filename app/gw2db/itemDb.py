@@ -6,6 +6,9 @@ from ..database.models import Item, Rarity, Type, PriceData, ItemFlag, ItemGameT
 
 
 class ItemDb:
+    """
+    Class to create relationship between Database and Api for everything concerning items.
+    """
     def __init__(self, api_key):
         self.apiClient = ApiClient(api_key)
 
@@ -13,6 +16,11 @@ class ItemDb:
         return self.apiClient.getPriceIdsChunked()
 
     def updatePrices(self, itemList=None):
+        """
+        Will update the prices and buy/sell quantities either from a given list of items or all available items
+        @param itemList: list of ids to update
+        @return: no return value
+        """
         if itemList:
             allItemPrices = self.apiClient.getPrice(idsString=itemList)
         else:
@@ -52,6 +60,11 @@ class ItemDb:
         return self.apiClient.getItemIdsChunked()
 
     def updateItems(self, itemList=None):
+        """
+        Will update the information either about items given in itemList or all available items.
+        @param itemList: list of ids to update
+        @return: no return value
+        """
         if itemList:
             allItemInformation = self.apiClient.getItem(idsString=itemList)
         else:
@@ -159,6 +172,11 @@ class ItemDb:
         db.session.commit()
 
     def getTypeObj(self, myType):
+        """
+        Will return the Type_Object from Database or create a new item and return it.
+        @param myType: String-value of Obj to return
+        @return: TypeObj
+        """
         typeObject = Type.query.filter_by(name=myType).first()
 
         # wir kennen den typ schon
@@ -172,6 +190,11 @@ class ItemDb:
             return newType
 
     def getRarityObj(self, myRarity):
+        """
+        Will return the Rarity_Object from Database or create a new Rarity and return it.
+        @param myRarity: String-value of Obj to return
+        @return: RarityObj
+        """
         rarityObject = Rarity.query.filter_by(name=myRarity).first()
 
         # wir kennen die rarity schon
