@@ -2,11 +2,14 @@ __author__ = 'Frenos'
 
 import requests
 
-from .endpoints import apiEndpoints, apiBaseUrl, apiLanguage
 from helpers import idList2String, idList2Chunks
+from .endpoints import apiEndpoints, apiBaseUrl, apiLanguage
 
 
 class ApiClient:
+    """
+    Class to connect to Gw2-Api, needs an API-KEY to work.
+    """
     def __init__(self, apikey):
         self.api_key = apikey
         self.httpSession = requests.Session()
@@ -28,6 +31,11 @@ class ApiClient:
             return []
 
     def GetCharacterInformation(self, character):
+        """
+        Gets information about a character.
+        :param character: character to get information about
+        :return: information as dict
+        """
         url = apiBaseUrl + apiEndpoints["Characters"]
         params = {"access_token": self.api_key,
                   "ids": character,
@@ -37,6 +45,10 @@ class ApiClient:
         return response.json()
 
     def getMaps(self):
+        """
+        Get information about maps from the api.
+        :return: information about all maps as list of dict
+        """
         url = apiBaseUrl + apiEndpoints["Maps"]
         params = {"lang": apiLanguage}
         response = self.httpSession.get(url=url, params=params)
@@ -53,8 +65,9 @@ class ApiClient:
         return mapData
 
     def getItemIds(self):
-        """ gets all available item-ids
-                returns them in a list
+        """
+        Get all available itemId from API.
+        :return: list of all itemId available
         """
         url = apiBaseUrl + apiEndpoints["Items"]
         params = {"lang": apiLanguage}
@@ -62,10 +75,20 @@ class ApiClient:
         return response.json()
 
     def getItemIdsChunked(self):
+        """
+        Get all available itemId from API and return them chunked.
+        :return: list of lists of itemIds
+        """
         allItemIds = self.getItemIds()
         return idList2Chunks(allItemIds)
 
     def getItem(self, itemId=None, idsString=None):
+        """
+        Get Details about an item or multiple items
+        :param itemId: Set if only item
+        :param idsString: Set to get multiple Items at once
+        :return: (list of) dict of details about items
+        """
         url = apiBaseUrl + apiEndpoints["Items"]
 
         if idsString:
@@ -81,6 +104,10 @@ class ApiClient:
         return response.json()
 
     def getAllItems(self):
+        """
+        Get all itemDetails in one big list.
+        :return: list of all available item-details.
+        """
         itemIdChunkList = self.getItemIdsChunked()
         allItems = []
         for chunk in itemIdChunkList:
@@ -88,6 +115,10 @@ class ApiClient:
         return allItems
 
     def getBankContent(self):
+        """
+        Get the current contents of the bank.
+        :return: list of dict about bank contents
+        """
         url = apiBaseUrl + apiEndpoints["AccountBank"]
         params = {
             "lang": apiLanguage,
@@ -99,6 +130,10 @@ class ApiClient:
         return bankContents
 
     def getCurrencies(self):
+        """
+        Get all currencies known to the game.
+        :return: a list of dict with information about currencies
+        """
         url = apiBaseUrl + apiEndpoints["Currencies"]
         params = {
             "lang": apiLanguage
@@ -114,8 +149,9 @@ class ApiClient:
         return response.json()
 
     def getPriceIds(self):
-        """ gets all available price-ids
-                returns them in a list
+        """
+        Get all available price-ids.
+        :return: list of ids
         """
         url = apiBaseUrl + apiEndpoints["ItemPrices"]
         params = {"lang": apiLanguage}
@@ -123,10 +159,20 @@ class ApiClient:
         return response.json()
 
     def getPriceIdsChunked(self):
+        """
+        Get all available price-ids.
+        :return: list of list of price-ids
+        """
         allPriceIds = self.getPriceIds()
         return idList2Chunks(allPriceIds)
 
     def getPrice(self, itemId=None, idsString=None):
+        """
+        Get price-information either about a single item or a list of items.
+        :param itemId: set to get information about one item
+        :param idsString: set to get information about multiple items at once
+        :return: (list of) dict with information
+        """
         url = apiBaseUrl + apiEndpoints["ItemPrices"]
 
         if idsString:
@@ -142,6 +188,10 @@ class ApiClient:
         return response.json()
 
     def getWalletContent(self):
+        """
+        Get current status of currencies the account collected.
+        :return: list of dict with currency-values
+        """
         url = apiBaseUrl + apiEndpoints["AccountWallet"]
         params = {
             "lang": apiLanguage,
@@ -151,6 +201,10 @@ class ApiClient:
         return response.json()
 
     def getPvPMatchIds(self):
+        """
+        Get ids of last 10 played matches.
+        :return: list of match-ids
+        """
         url = apiBaseUrl + apiEndpoints["PvpMatches"]
         params = {
             "lang": apiLanguage,
@@ -160,6 +214,10 @@ class ApiClient:
         return response.json()
 
     def getPvPMatchDetails(self):
+        """
+        Get information about last 10 played pvp-matches.
+        :return: list of dict with match-information
+        """
         idsString = idList2String(self.getPvPMatchIds())
         url = apiBaseUrl + apiEndpoints["PvpMatches"]
         params = {
@@ -171,6 +229,12 @@ class ApiClient:
         return response.json()
 
     def getTransactionsHistory(self, sells=None, buys=None):
+        """
+        Get Tradingpost-transactions of the account.
+        :param sells: set to True to get Sell transaction
+        :param buys: set to True to get Sell transaction
+        :return: list of dict with information about transactions
+        """
         url = apiBaseUrl + apiEndpoints["AccountTransactions"] + "/history"
         if sells:
             url = url + "/sells"
