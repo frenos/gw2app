@@ -73,7 +73,14 @@ class AccountDb:
         Will update the contents of the bank
         @return: no return value
         """
+        print("updating bank")
         bankContents = self.apiClient.getBankContent()
+        # delete previous bankcontents
+        try:
+            db.session.query(BankSlot).delete()
+            db.session.commit()
+        except:
+            db.session.rollback()
         # list(enumerate(list)) erzeugt neue list mit [(index, value), ..]
         for bankSlot in list(enumerate(bankContents)):
             slotId = bankSlot[0]
