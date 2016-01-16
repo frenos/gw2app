@@ -18,6 +18,8 @@ class Item(db.Model):
     # TODO:cross-reference Skin-ID to Skin-Api?
     default_skin = db.Column(db.Integer)
     bankslots = db.relationship('BankSlot', backref='item')
+    recipe = db.relationship('Recipe', backref='output_item')
+    recipeIngredient = db.relationship('RecipeIngredient', backref='item')
     priceData = db.relationship('PriceData')
     transactions = db.relationship('TPTransaction', backref='item')
 
@@ -132,3 +134,30 @@ class Map(db.Model):
     continent_id = db.Column(db.Integer)
     continent_name = db.Column(db.Text)
     matches = db.relationship('PvpMatch', backref='map')
+
+
+class Recipe(db.Model):
+    __tablename__ = 'recipes'
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Text())
+    output_item_id = db.Column(db.Integer, db.ForeignKey('items.id'))
+    output_item_count = db.Column(db.Integer)
+    disciplines = db.relationship('RecipeDiscipline', backref='recipe')
+    min_rating = db.Column(db.Integer)
+    ingredients = db.relationship('RecipeIngredient', backref='recipe')
+    chat_link = db.Column(db.Text())
+
+
+class RecipeDiscipline(db.Model):
+    __tablename__ = 'recipedisciplines'
+    id = db.Column(db.Integer, primary_key=True)
+    recipeId = db.Column(db.Integer, db.ForeignKey('recipes.id'))
+    discipline = db.Column(db.Text())
+
+
+class RecipeIngredient(db.Model):
+    __tablename__ = 'recipeingredients'
+    id = db.Column(db.Integer, primary_key=True)
+    recipeId = db.Column(db.Integer, db.ForeignKey('recipes.id'))
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'))
+    count = db.Column(db.Integer)

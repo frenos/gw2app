@@ -263,3 +263,33 @@ class ApiClient:
                 if not 'next' in response.links:
                     break
         return myTransactions
+    def getRecipeIds(self):
+        """
+        Get all available recipeIds
+        :return: list of ids
+        """
+        url = apiBaseUrl + apiEndpoints["Recipes"]
+        params = {
+            "lang": apiLanguage,
+        }
+        response = self.httpSession.get(url=url, params=params)
+        return response.json()
+
+    def getRecipeIdsChunked(self):
+        allRecipeIds = self.getRecipeIds()
+        return idList2Chunks(allRecipeIds)
+
+    def getRecipeDetails(self, idsString):
+        """
+        Get details about recipes
+        :param idsString: list of ids to get
+        :return:
+        """
+        url = apiBaseUrl + apiEndpoints["Recipes"]
+        ids = idList2String(idsString)
+        params = {
+            "lang": apiLanguage,
+            "ids": ids
+        }
+        response = self.httpSession.get(url=url, params=params)
+        return response.json()

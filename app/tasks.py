@@ -1,12 +1,12 @@
 from celery.signals import task_postrun
 
-from factory_celery import create_celery_app
-from app.database import db
-from app.gw2db.accountDb import AccountDb
-from app.gw2db.itemDb import ItemDb
-from app.gw2db.commonDb import CommonDb
 from app import config
+from app.database import db
 from app.extensions import celery
+from app.gw2db.accountDb import AccountDb
+from app.gw2db.commonDb import CommonDb
+from app.gw2db.itemDb import ItemDb
+from factory_celery import create_celery_app
 
 myAccountDb = AccountDb(api_key=config.GW2_API_KEY)
 myItemDb = ItemDb(api_key=config.GW2_API_KEY)
@@ -68,6 +68,19 @@ def updateBank_async():
     celery = create_celery_app()
     myAccountDb.getBankContent()
 
+
+@celery.task(base=celery.Task)
+def updateRecipes_async():
+    celery = create_celery_app()
+    allIds = myItemDb.getRecipeIdChunked()
+    for chunk in allIds:
+        updateRecipesfromList.delay(chunk)
+
+
+@celery.task(base=celery.Task)
+def updateRecipesfromList(recipeList):
+    celery = create_celery_app()
+    myItemDb.getRecipes(itemList=recipeList)
 
 @task_postrun.connect
 def close_session(*args, **kwargs):

@@ -1,14 +1,16 @@
 __author__ = 'Frenos'
 
-from ..gw2api.apiclient import ApiClient
 from ..database import db
-from ..database.models import Item, Rarity, Type, PriceData, ItemFlag, ItemGameType, ItemRestriction
+from ..database.models import Item, Rarity, Type, PriceData, ItemFlag, ItemGameType, ItemRestriction, Recipe, \
+    RecipeDiscipline, RecipeIngredient
+from ..gw2api.apiclient import ApiClient
 
 
 class ItemDb:
     """
     Class to create relationship between Database and Api for everything concerning items.
     """
+
     def __init__(self, api_key):
         self.apiClient = ApiClient(api_key)
 
@@ -54,6 +56,52 @@ class ItemDb:
                     sellPrice=sellPrice
                 )
                 db.session.add(newPriceData)
+        db.session.commit()
+
+    def getRecipeIdChunked(self):
+            return self.apiClient.getRecipeIdsChunked()
+
+    def getRecipes(self, itemList=None):
+        recipeInfo = self.apiClient.getRecipeDetails(itemList)
+        for recipe in recipeInfo:
+            id = recipe['id']
+            recipeObj = Recipe.query.get(recipe['id'])
+            type = recipe['type']
+            output_item_id =recipe['output_item_id']
+            output_item_count = recipe['output_item_count']
+            min_rating = recipe['min_rating']
+            chat_link = recipe['chat_link']
+
+            if recipeObj:
+                recipeObj.type = type
+                recipeObj.output_item_id = output_item_id
+                recipeObj.output_item_count = output_item_count
+                recipeObj.min_rating = min_rating
+                recipeObj.chat_link = chat_link
+            else:
+                recipeObj = Recipe(
+                    id=id,
+                    type=type,
+                    output_item_id=output_item_id,
+                    output_item_count=output_item_count,
+                    min_rating=min_rating,
+                    chat_link=chat_link,
+                    disciplines=[],
+                    ingredients=[]
+                )
+
+            for discipline in recipe['disciplines']:
+                discObj = RecipeDiscipline.query.filter_by(recipeId=id).filter_by(discipline=discipline).first()
+                if not discObj:
+                    newDisc = RecipeDiscipline(recipeId=id, discipline=discipline)
+                    recipeObj.disciplines.append(newDisc)
+
+            for ingredient in recipe['ingredients']:
+                            ingredientObj = RecipeIngredient.query.filter_by(recipeId=id).filter_by(item_id=ingredient['item_id']).first()
+                            if not ingredientObj:
+                                newIngredient = RecipeIngredient(recipeId=id, item_id=ingredient['item_id'], count=ingredient['count'])
+                                recipeObj.ingredients.append(newIngredient)
+            db.session.add(recipeObj)
         db.session.commit()
 
     def getItemsChunked(self):

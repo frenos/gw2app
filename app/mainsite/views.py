@@ -3,11 +3,10 @@ from app.mainsite import mainsite
 __author__ = 'Frenos'
 
 from datetime import datetime
-
 from flask import render_template
-from ..database.models import Currency, BankSlot, Item, PvpMatch, TPTransaction
+from ..database.models import Currency, BankSlot, Item, PvpMatch, TPTransaction, Recipe
 from ..tasks import updatePrices_async, updateItems_async, updateBank_async, updateTransactions_async, \
-    updatePvPMatches_async
+    updatePvPMatches_async, updateRecipes_async
 
 
 @mainsite.route('/')
@@ -77,6 +76,18 @@ def itemsDetails(itemid):
     return render_template('items_details.html', item=itemObj)
 
 
+@mainsite.route('/recipes')
+@mainsite.route('/recipes/<int:page>')
+def recipes(page=1):
+    pagination = Recipe.query.paginate(page, 50, False)
+    return render_template('recipes.html', pagination=pagination)
+
+
+@mainsite.route('/recipes/details/<int:recipeid>')
+def recipeDetails(recipeid):
+    recipeObj = Recipe.query.get(recipeid)
+    return render_template('recipes_details.html', recipe=recipeObj)
+
 @mainsite.route('/transactions')
 @mainsite.route('/transactions/<int:page>')
 def transactions(page=1):
@@ -90,5 +101,6 @@ def updateAll():
     updateBank_async.delay()
     updateTransactions_async.delay()
     updatePvPMatches_async.delay()
+    updateRecipes_async.delay()
     return render_template('index.html',
                            current_time=datetime.utcnow())

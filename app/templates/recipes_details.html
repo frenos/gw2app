@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Gw2App - RecipeDB{% endblock %}
+
+{% block page_content %}
+    <div class="page-header">
+        <h1>Recipe - {{ recipe.output_item.name }}:</h1>
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Icon</td>
+                <td><img src="{{ recipe.output_item.icon }}" width="32"></td>
+            </tr>
+            <tr>
+                <td>Item</td>
+                <td>
+                    <a href="{{ url_for('mainsite.itemsDetails', itemid=recipe.output_item_id) }}"> {{ recipe.output_item.name }}</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Item Count</td>
+                <td>{{ recipe.output_item_count }}</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>{{ recipe.type }}</td>
+            </tr>
+            <tr>
+                <td>Chatlink</td>
+                <td>{{ recipe.chat_link }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>Icon</th>
+                <th>Count</th>
+                <th>Item</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ingredient in recipe.ingredients %}
+                <tr>
+                    <td><img src="{{ ingredient.item.icon }}" width="32"></td>
+                    <td>{{ ingredient.count }}</td>
+                    <td>
+                        <a href="{{ url_for('mainsite.itemsDetails', itemid=ingredient.item_id) }}"> {{ ingredient.item.name }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
