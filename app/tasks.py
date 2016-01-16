@@ -20,6 +20,12 @@ def getWalletData_async():
     myAccountDb.updateCurrencies()
     myAccountDb.getWalletData()
 
+
+@celery.task(base=celery.Task)
+def cleanupWalletData_async():
+    celery = create_celery_app()
+    myAccountDb.cleanUpWalletData()
+
 @celery.task(base=celery.Task)
 def updateItems_async():
     celery = create_celery_app()

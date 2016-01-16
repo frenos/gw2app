@@ -68,6 +68,26 @@ class AccountDb:
             db.session.add(newData)
         db.session.commit()
 
+    def cleanUpWalletData(self):
+        # get all WalletData for currency
+        currencies = Currency.query.all()
+        for currencyObj in currencies:
+            walletdata = WalletData.query.filter_by(currency=currencyObj)
+            it = iter(walletdata[2:])
+            try:
+                previousElement = walletdata[0]
+            except:
+                previousElement = -1
+            for wdata in walletdata[1:]:
+                nextElement = next(it, None)
+                if nextElement:
+                    if previousElement.value == wdata.value and nextElement.value == wdata.value and nextElement != wdata:
+                        db.session.delete(wdata)
+                        print("%s <- prev %s next -> %s" % (previousElement.value, wdata.value, nextElement.value))
+                    else:
+                        previousElement = wdata
+            db.session.commit()
+
     def getBankContent(self):
         """
         Will update the contents of the bank
